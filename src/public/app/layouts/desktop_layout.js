@@ -83,6 +83,7 @@ import UploadAttachmentsDialog from "../widgets/dialogs/upload_attachments.js";
 import CopyImageReferenceButton from "../widgets/floating_buttons/copy_image_reference_button.js";
 import ScrollPaddingWidget from "../widgets/scroll_padding.js";
 import ClassicEditorToolbar from "../widgets/ribbon_widgets/classic_editor_toolbar.js";
+import ScrollToBottomButton from "../widgets/buttons/scroll_to_bottom.js";
 
 export default class DesktopLayout {
     constructor(customWidgets) {
@@ -157,6 +158,7 @@ export default class DesktopLayout {
                                             .ribbon(new NoteMapRibbonWidget())
                                             .ribbon(new SimilarNotesWidget())
                                             .ribbon(new NoteInfoWidget())
+                                            .button(new ScrollToBottomButton())
                                             .button(new RevisionsButton())
                                             .button(new NoteActionsWidget())
                                     )
