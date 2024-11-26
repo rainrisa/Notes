@@ -1,12 +1,5 @@
 name: Main
 on:
-  push:
-    branches:
-      - "feature/update**"
-      - "feature/server_esm**"
-    paths-ignore:
-      - "docs/**"
-      - ".github/workflows/main-docker.yml"
   workflow_dispatch:    
 
 concurrency:
@@ -21,15 +14,9 @@ jobs:
       matrix:
         arch: [x64, arm64]
         os:
-          - name: macos
-            image: macos-latest
-            extension: dmg
           - name: linux
             image: ubuntu-latest
             extension: deb
-          - name: windows
-            image: windows-latest
-            extension: exe
     runs-on: ${{ matrix.os.image }}
     steps:
       - uses: actions/checkout@v4
@@ -37,9 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Set up Python for appdmg to be installed
-        if: ${{ matrix.os.name == 'macos' }}
-        run: brew install python-setuptools
       - name: Install dependencies
         run: npm ci
       - name: Update build info
@@ -54,14 +38,6 @@ jobs:
           cp "$file" "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}-${{ github.ref_name }}.zip"
           file=$(find out/make -name '*.${{ matrix.os.extension }}' -print -quit)
           cp "$file" "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}-${{ github.ref_name }}.${{ matrix.os.extension }}"
-      - name: Prepare artifacts (Windows)
-        if: runner.os == 'windows'
-        run: |
-          mkdir upload
-          $file = Get-ChildItem -Path out/make -Filter '*.zip' -Recurse | Select-Object -First 1
-          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}-${{ github.ref_name }}.zip"
-          $file = Get-ChildItem -Path out/make -Filter '*.${{ matrix.os.extension }}' -Recurse | Select-Object -First 1
-          Copy-Item -Path $file.FullName -Destination "upload/TriliumNextNotes-${{ matrix.os.name }}-${{ matrix.arch }}-${{ github.ref_name }}.${{ matrix.os.extension }}"
       - name: Publish artifacts
         uses: actions/upload-artifact@v4
         with:
